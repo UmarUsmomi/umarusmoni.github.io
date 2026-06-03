@@ -314,8 +314,23 @@
 }
 
 .hex-item .hex-icon {
-  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hex-item .hex-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke: var(--text-secondary);
+  color: var(--text-secondary);
+  transition: stroke var(--transition), filter var(--transition), color var(--transition);
+}
+
+.hex-item:hover .hex-icon svg {
+  stroke: var(--accent-primary);
   color: var(--accent-primary);
+  filter: drop-shadow(0 0 6px var(--accent-primary));
 }
 
 .hex-item .hex-label {
@@ -324,6 +339,11 @@
   color: var(--text-secondary);
   text-align: center;
   line-height: 1.2;
+  transition: color var(--transition);
+}
+
+.hex-item:hover .hex-label {
+  color: var(--text-primary);
 }
 
 /* ─────────────────────────────────────────────────────────────

@@ -35,6 +35,27 @@ const initParticles = (() => {
   let rafId = null;
   let sphereRadius = 150;
 
+  // 3D Camera Translation Targets
+  let targetX = 0;
+  let targetY = 0;
+  let targetZ = 0;
+  let targetRadius = 150;
+
+  // Current interpolated values
+  let currentX = 0;
+  let currentY = 0;
+  let currentZ = 0;
+
+  // Warp speed state
+  let warpActive = false;
+  let warpTimer = 0;
+  let warpSpeedFactor = 1;
+
+  /* ── Lerp helper ───────────────────────────────────────── */
+  function lerp(start, end, amt) {
+    return (1 - amt) * start + amt * end;
+  }
+
   /* ── Fibonacci Sphere Distribution ─────────────────────── */
   function generateSpherePoints(n) {
     const pts = [];
@@ -70,12 +91,16 @@ const initParticles = (() => {
 
   /* ── 3D → 2D Projection ───────────────────────────────── */
   function project(x, y, z) {
-    const scale = CONFIG.perspective / (CONFIG.perspective + z);
+    // Apply 3D camera translation
+    const tx = x + currentX;
+    const ty = y + currentY;
+    const tz = z + currentZ;
+    const scale = CONFIG.perspective / (CONFIG.perspective + tz);
     return {
-      sx: x * scale + W / 2,
-      sy: y * scale + H / 2,
+      sx: tx * scale + W / 2,
+      sy: ty * scale + H / 2,
       scale,
-      z,
+      z: tz,
     };
   }
 
@@ -95,12 +120,70 @@ const initParticles = (() => {
     return dx * dx + dy * dy;
   }
 
+  /* ── Scroll 3D Parameters Calculator ───────────────────── */
+  function update3DParams() {
+    const scrollY = window.scrollY;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (maxScroll <= 0) return;
+    const pct = scrollY / maxScroll;
+
+    const factorX = isMobile() ? 0.05 : 0.25;
+
+    // Linearly interpolate targets based on scroll phase
+    if (pct < 0.25) {
+      // Hero (0%) -> About (25%)
+      const t = pct / 0.25;
+      targetX = lerp(0, W * factorX, t);
+      targetY = lerp(0, -H * 0.05, t);
+      targetZ = lerp(0, -100, t);
+      targetRadius = lerp(Math.min(W, H) * 0.25, Math.min(W, H) * 0.22, t);
+    } else if (pct < 0.50) {
+      // About (25%) -> Projects (50%)
+      const t = (pct - 0.25) / 0.25;
+      targetX = lerp(W * factorX, -W * factorX, t);
+      targetY = lerp(-H * 0.05, H * 0.05, t);
+      targetZ = lerp(-100, 100, t);
+      targetRadius = lerp(Math.min(W, H) * 0.22, Math.min(W, H) * 0.24, t);
+    } else if (pct < 0.75) {
+      // Projects (50%) -> Skills (75%)
+      const t = (pct - 0.50) / 0.25;
+      targetX = lerp(-W * factorX, 0, t);
+      targetY = lerp(H * 0.05, -H * 0.1, t);
+      targetZ = lerp(100, 200, t);
+      targetRadius = lerp(Math.min(W, H) * 0.24, Math.min(W, H) * 0.18, t);
+    } else {
+      // Skills (75%) -> Contact (100%)
+      const t = (pct - 0.75) / 0.25;
+      targetX = lerp(0, W * 0.1, t);
+      targetY = lerp(-H * 0.1, H * 0.1, t);
+      targetZ = lerp(200, -200, t);
+      targetRadius = lerp(Math.min(W, H) * 0.18, Math.min(W, H) * 0.20, t);
+    }
+  }
+
   /* ── Draw Frame ────────────────────────────────────────── */
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
+    // Smoothly interpolate current camera coordinates
+    currentX += (targetX - currentX) * 0.06;
+    currentY += (targetY - currentY) * 0.06;
+    currentZ += (targetZ - currentZ) * 0.06;
+    sphereRadius += (targetRadius - sphereRadius) * 0.06;
+
+    // Handle warp speed dynamics
+    if (warpActive) {
+      warpSpeedFactor += (10 - warpSpeedFactor) * 0.12;
+      warpTimer--;
+      if (warpTimer <= 0) {
+        warpActive = false;
+      }
+    } else {
+      warpSpeedFactor += (1 - warpSpeedFactor) * 0.05;
+    }
+
     /* — 1. Sphere — */
-    angleY += CONFIG.rotSpeedY;
+    angleY += CONFIG.rotSpeedY * warpSpeedFactor;
     const totalAngleY = angleY + mouseOffX * CONFIG.parallaxFactor;
     const totalAngleX = mouseOffY * CONFIG.parallaxFactor;
 
@@ -143,8 +226,8 @@ const initParticles = (() => {
     /* — 2. Floating Particles — */
     const fMaxDist2 = CONFIG.floatLineMax * CONFIG.floatLineMax;
     for (const p of floatingParticles) {
-      p.x += p.vx;
-      p.y += p.vy;
+      p.x += p.vx * warpSpeedFactor;
+      p.y += p.vy * warpSpeedFactor;
       // Wrap around canvas edges
       if (p.x < 0) p.x = W;
       if (p.x > W) p.x = 0;
@@ -226,6 +309,20 @@ const initParticles = (() => {
     });
 
     window.addEventListener('resize', debouncedResize);
+
+    // Scroll listener to update 3D positions
+    window.addEventListener('scroll', update3DParams);
+    
+    // Initial call to set parameters based on current scroll position
+    update3DParams();
+
+    // Warp speed effect on navigation links clicks
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', () => {
+        warpActive = true;
+        warpTimer = 45; // 45 frames of warp speed
+      });
+    });
 
     // Visibility API — will naturally skip draws
     document.addEventListener('visibilitychange', () => {});
