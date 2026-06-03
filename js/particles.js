@@ -257,6 +257,81 @@ const initParticles = (() => {
         }
       }
     }
+
+    /* — 3. 3D Terrain Wave Grid (Holographic Landscape) — */
+    const waveRows = 10;
+    const waveCols = 24;
+    const waveWidth = W * 1.35; // slightly wider to overlap screen boundaries
+    const waveDepth = 400;
+    const waveStartDepth = -150;
+    const waveYOffset = H * 0.18; // push wave down below sphere
+    
+    if (!window.waveTime) window.waveTime = 0;
+    window.waveTime += 0.015;
+    
+    const waveGrid = [];
+    
+    for (let r = 0; r < waveRows; r++) {
+      waveGrid[r] = [];
+      const zNorm = r / (waveRows - 1);
+      const z = waveStartDepth + zNorm * waveDepth;
+      
+      for (let c = 0; c < waveCols; c++) {
+        const xNorm = c / (waveCols - 1);
+        const x = (xNorm - 0.5) * waveWidth;
+        
+        // Undulate height based on distance, time and grid indices
+        const distFromCenter = Math.abs(xNorm - 0.5);
+        const edgeFade = Math.cos(distFromCenter * Math.PI); // fade at left/right edges
+        
+        // Dual sine-cosine wave formula for organic holographic simulation
+        const wave1 = Math.sin(x * 0.005 + window.waveTime * 1.5) * 20;
+        const wave2 = Math.cos(z * 0.008 - window.waveTime) * 15;
+        const y = waveYOffset + (wave1 + wave2) * edgeFade;
+        
+        let pt = { x, y, z };
+        
+        // Rotate slightly with mouse parallax
+        const waveAngleY = mouseOffX * CONFIG.parallaxFactor * 0.25;
+        pt = rotateY(pt, waveAngleY);
+        
+        waveGrid[r].push(project(pt.x, pt.y, pt.z));
+      }
+    }
+    
+    // Draw waves mesh
+    ctx.lineWidth = 0.8;
+    for (let r = 0; r < waveRows; r++) {
+      for (let c = 0; c < waveCols; c++) {
+        const pt = waveGrid[r][c];
+        const rNorm = r / (waveRows - 1);
+        
+        // Alpha fades towards the back and front rows
+        const alpha = 0.22 * Math.sin(rNorm * Math.PI) * pt.scale;
+        
+        if (alpha <= 0) continue;
+        
+        ctx.strokeStyle = `rgba(0, 255, 136, ${alpha.toFixed(3)})`;
+        
+        // Draw horizontal line (X axis connection)
+        if (c < waveCols - 1) {
+          const nextPt = waveGrid[r][c+1];
+          ctx.beginPath();
+          ctx.moveTo(pt.sx, pt.sy);
+          ctx.lineTo(nextPt.sx, nextPt.sy);
+          ctx.stroke();
+        }
+        
+        // Draw depth line (Z axis connection)
+        if (r < waveRows - 1) {
+          const nextPt = waveGrid[r+1][c];
+          ctx.beginPath();
+          ctx.moveTo(pt.sx, pt.sy);
+          ctx.lineTo(nextPt.sx, nextPt.sy);
+          ctx.stroke();
+        }
+      }
+    }
   }
 
   /* ── Animation Loop ────────────────────────────────────── */

@@ -286,43 +286,56 @@ html {
   }
 }
 
-/* ----- 8. Glowing Nebula Background (Option A) ------------- */
+/* ----- 8. Glowing Nebula Background & Grid Overlay (Option A) ------------- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    linear-gradient(rgba(0, 255, 136, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 136, 0.015) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: center;
+  pointer-events: none;
+  z-index: -2; /* Behind everything */
+}
+
 .nebula-glow {
   position: fixed;
   border-radius: 50%;
-  filter: blur(160px);
-  -webkit-filter: blur(160px);
+  filter: blur(130px);
+  -webkit-filter: blur(130px);
   pointer-events: none;
   z-index: -1;
-  opacity: 0.04; /* Highly subtle, premium cyberpunk glow */
-  animation: nebula-drift 30s ease-in-out infinite alternate;
+  opacity: 0.16; /* Faint yet visible glowing neon fog banks (mobile & desktop) */
+  animation: nebula-drift 32s ease-in-out infinite alternate;
 }
 
 .nebula-1 {
-  width: min(80vw, 600px);
-  height: min(80vw, 600px);
-  background: radial-gradient(circle, var(--accent-primary) 0%, transparent 70%);
-  top: -10%;
+  width: min(90vw, 650px);
+  height: min(90vw, 650px);
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.5) 0%, transparent 70%);
+  top: -15%;
   left: -10%;
   animation-duration: 35s;
 }
 
 .nebula-2 {
-  width: min(90vw, 700px);
-  height: min(90vw, 700px);
-  background: radial-gradient(circle, var(--accent-teal) 0%, transparent 70%);
-  bottom: -15%;
+  width: min(100vw, 750px);
+  height: min(100vw, 750px);
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.55) 0%, transparent 70%);
+  bottom: -20%;
   right: -10%;
   animation-duration: 45s;
   animation-delay: -7s;
 }
 
 .nebula-3 {
-  width: min(70vw, 500px);
-  height: min(70vw, 500px);
-  background: radial-gradient(circle, var(--accent-secondary) 0%, transparent 70%);
+  width: min(80vw, 550px);
+  height: min(80vw, 550px);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, transparent 70%);
   top: 35%;
-  right: 15%;
+  right: 10%;
   animation-duration: 40s;
   animation-delay: -12s;
 }
@@ -332,9 +345,9 @@ html {
     transform: translate(0, 0) scale(1);
   }
   50% {
-    transform: translate(80px, -60px) scale(1.15);
+    transform: translate(60px, -50px) scale(1.1);
   }
   100% {
-    transform: translate(-40px, 80px) scale(0.9);
+    transform: translate(-30px, 60px) scale(0.95);
   }
 }
