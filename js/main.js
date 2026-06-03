@@ -160,6 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     hamburger.addEventListener('click', () => toggleMenu());
 
+    // Close on close button click
+    const mobileCloseBtn = document.getElementById('mobile-close-btn');
+    if (mobileCloseBtn) {
+      mobileCloseBtn.addEventListener('click', () => toggleMenu(false));
+    }
+
     // Close on link click
     mobileMenu.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => toggleMenu(false));

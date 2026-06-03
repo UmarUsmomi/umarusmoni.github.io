@@ -111,34 +111,18 @@ section {
   margin-right: 8px;
 }
 
-.terminal-input-display {
-  color: var(--text-primary);
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.terminal-hidden-input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  border: none;
+.terminal-input {
+  flex: 1;
+  min-width: 0;
   background: transparent;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.terminal-cursor {
-  display: inline-block;
-  color: var(--accent-primary);
-  font-weight: bold;
-  margin-left: 2px;
-  animation: terminal-caret-blink 0.9s step-end infinite;
-}
-
-@keyframes terminal-caret-blink {
-  from, to { color: transparent }
-  50% { color: var(--accent-primary) }
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: inherit;
+  padding: 0;
+  margin: 0;
+  caret-color: var(--accent-primary);
 }
 
 /* Custom terminal scrollbar */
