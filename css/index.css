@@ -8,8 +8,8 @@
   /* Backgrounds */
   --bg-primary:    #050505;
   --bg-secondary:  #0a0f0a;
-  --bg-card:       rgba(16, 185, 129, 0.05);
-  --bg-card-hover: rgba(16, 185, 129, 0.10);
+  --bg-card:       rgba(10, 18, 12, 0.55);
+  --bg-card-hover: rgba(16, 185, 129, 0.12);
 
   /* Borders */
   --border-glass:  rgba(16, 185, 129, 0.15);

@@ -308,9 +308,11 @@
   width: 100px;
   height: 100px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  background: var(--bg-card);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(10, 18, 12, 0.65); /* More opaque green-tinted charcoal for visible frosted glass */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform: translateZ(0); /* force GPU acceleration to fix Chrome clip-path blur rendering */
+  will-change: transform, scale;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -421,10 +423,12 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--bg-card);
-  border: 1px solid var(--border-glass);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(10, 18, 12, 0.65); /* More opaque green-tinted charcoal for visible frosted glass */
+  border: 1.2px solid rgba(0, 255, 136, 0.25); /* Glowing outline boundary */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform: translateZ(0); /* force hardware acceleration */
+  will-change: transform, scale;
   font-size: 1.2rem;
   color: var(--text-secondary);
   cursor: pointer;
@@ -432,6 +436,7 @@
               background var(--transition),
               border-color var(--transition),
               box-shadow var(--transition),
+              scale var(--transition),
               transform var(--transition);
 }
 

@@ -274,4 +274,27 @@ document.addEventListener('DOMContentLoaded', () => {
     counters.forEach((el) => counterObserver.observe(el));
   }
 
+  /* ══════════════════════════════════════════════════════
+     10. MAC-STYLE SOCIAL DOCK MAGNIFIER ANIMATION
+     ══════════════════════════════════════════════════════ */
+  const dock = document.querySelector('.dock');
+  if (dock) {
+    dock.addEventListener('pointermove', (e) => {
+      dock.querySelectorAll('.dock > *').forEach((el) => {
+        const r = el.getBoundingClientRect();
+        const t = Math.max(
+          0,
+          1 - Math.abs(e.clientX - (r.x + r.width / 2)) / 120
+        );
+        el.style.scale = 1 + t * 0.4;
+      });
+    });
+
+    dock.addEventListener('pointerleave', () => {
+      dock.querySelectorAll('.dock > *').forEach((el) => {
+        el.style.scale = '';
+      });
+    });
+  }
+
 }); // end DOMContentLoaded
