@@ -264,7 +264,10 @@ html {
 /* Text utilities */
 .text-center { text-align: center; }
 .text-muted  { color: var(--text-secondary); }
-.text-accent { color: var(--accent-primary); }
+.text-accent {
+  color: var(--accent-primary);
+  text-shadow: 0 0 5px rgba(0, 255, 136, 0.35);
+}
 .font-mono   { font-family: var(--font-mono); }
 
 /* ----- 7. Responsive Base Adjustments ----------------------- */
