@@ -78,15 +78,16 @@ const initCursor = (() => {
       ctx.fill();
     }
 
-    // Main cursor dot with glow
-    ctx.save();
-    ctx.shadowColor = `rgba(${COLOR}, 0.8)`;
-    ctx.shadowBlur = GLOW_BLUR;
+    // Main cursor dot with gradient-based glow (GPU-friendly, no shadowBlur)
+    const glowGrad = ctx.createRadialGradient(mx, my, 2, mx, my, CURSOR_R + GLOW_BLUR);
+    glowGrad.addColorStop(0, `rgba(${COLOR}, 0.9)`);
+    glowGrad.addColorStop(CURSOR_R / (CURSOR_R + GLOW_BLUR), `rgba(${COLOR}, 0.6)`);
+    glowGrad.addColorStop(1, `rgba(${COLOR}, 0)`);
+
     ctx.beginPath();
-    ctx.arc(mx, my, CURSOR_R, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${COLOR}, 0.9)`;
+    ctx.arc(mx, my, CURSOR_R + GLOW_BLUR, 0, Math.PI * 2);
+    ctx.fillStyle = glowGrad;
     ctx.fill();
-    ctx.restore();
 
     rafId = requestAnimationFrame(loop);
   }

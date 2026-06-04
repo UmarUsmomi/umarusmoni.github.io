@@ -279,6 +279,15 @@ document.addEventListener('DOMContentLoaded', () => {
      ══════════════════════════════════════════════════════ */
   const dock = document.querySelector('.dock');
   if (dock) {
+    // Add hover sounds to dock items
+    dock.querySelectorAll('.dock > *').forEach((el) => {
+      el.addEventListener('mouseenter', () => {
+        if (typeof window.playClickSound === 'function') {
+          window.playClickSound(1.6); // softer, lower pitch tick
+        }
+      });
+    });
+
     dock.addEventListener('pointermove', (e) => {
       dock.querySelectorAll('.dock > *').forEach((el) => {
         const r = el.getBoundingClientRect();

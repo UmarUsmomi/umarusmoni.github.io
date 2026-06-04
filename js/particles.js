@@ -77,7 +77,17 @@ const initParticles = (() => {
   /* ── Floating Particles ────────────────────────────────── */
   function createFloating(n) {
     const arr = [];
+    const glyphs = '0123456789ABCDEF+x'.split('');
     for (let i = 0; i < n; i++) {
+      const rand = Math.random();
+      let type = 'dot';
+      let char = '';
+      if (rand > 0.85) {
+        type = 'glyph';
+        char = glyphs[Math.floor(Math.random() * glyphs.length)];
+      } else if (rand > 0.7) {
+        type = 'plus';
+      }
       arr.push({
         x:  Math.random() * W,
         y:  Math.random() * H,
@@ -85,6 +95,8 @@ const initParticles = (() => {
         vy: (Math.random() - 0.5) * 0.3,
         r:  CONFIG.floatRadiusMin + Math.random() * (CONFIG.floatRadiusMax - CONFIG.floatRadiusMin),
         a:  0.1 + Math.random() * 0.4,
+        type,
+        char
       });
     }
     return arr;
@@ -183,14 +195,36 @@ const initParticles = (() => {
       warpSpeedFactor += (1 - warpSpeedFactor) * 0.05;
     }
 
+    /* — 0. Background Grid (Cyberpunk Grid Backdrop) — */
+    const mx = mouseOffX + W / 2;
+    const my = mouseOffY + H / 2;
+    ctx.beginPath();
+    const gridSpacing = 80;
+    // Vertical lines
+    const startX = Math.floor(W % gridSpacing) / 2;
+    for (let x = startX; x < W; x += gridSpacing) {
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, H);
+    }
+    // Horizontal lines
+    const startY = Math.floor(H % gridSpacing) / 2;
+    for (let y = startY; y < H; y += gridSpacing) {
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+    }
+    const gridGrad = ctx.createRadialGradient(mx, my, 10, mx, my, 300);
+    gridGrad.addColorStop(0, 'rgba(0, 255, 136, 0.12)');
+    gridGrad.addColorStop(1, 'rgba(0, 255, 136, 0.015)');
+    ctx.strokeStyle = gridGrad;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
     /* — 1. Sphere — */
     angleY += CONFIG.rotSpeedY * warpSpeedFactor;
     const totalAngleY = angleY + mouseOffX * CONFIG.parallaxFactor;
     const totalAngleX = mouseOffY * CONFIG.parallaxFactor;
 
     const projected = [];
-    const mx = mouseOffX + W / 2;
-    const my = mouseOffY + H / 2;
     for (let i = 0; i < spherePoints.length; i++) {
       let p = spherePoints[i];
       // Scale to sphere radius
@@ -213,21 +247,41 @@ const initParticles = (() => {
       projected.push(proj);
     }
 
-    // Lines between nearby sphere points
+    // Lines between nearby sphere points (optimized sweep-line & path-batched)
     const maxDist2 = CONFIG.sphereLineMax * CONFIG.sphereLineMax;
-    for (let i = 0; i < projected.length; i++) {
-      for (let j = i + 1; j < projected.length; j++) {
-        const d2 = dist2(projected[i], projected[j]);
+    const sortedProjected = [...projected].sort((a, b) => a.sx - b.sx);
+    const sphereLineBuckets = Array.from({ length: 6 }, () => []);
+
+    for (let i = 0; i < sortedProjected.length; i++) {
+      const pI = sortedProjected[i];
+      for (let j = i + 1; j < sortedProjected.length; j++) {
+        const pJ = sortedProjected[j];
+        const dx = pJ.sx - pI.sx;
+        if (dx >= CONFIG.sphereLineMax) {
+          break; // Sweep-line early out
+        }
+        const dy = pJ.sy - pI.sy;
+        const d2 = dx * dx + dy * dy;
         if (d2 < maxDist2) {
           const alpha = 0.3 * (1 - d2 / maxDist2);
-          ctx.beginPath();
-          ctx.moveTo(projected[i].sx, projected[i].sy);
-          ctx.lineTo(projected[j].sx, projected[j].sy);
-          ctx.strokeStyle = `rgba(0, 255, 136, ${alpha})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
+          const bucketIndex = Math.min(5, Math.floor((alpha / 0.3) * 6));
+          sphereLineBuckets[bucketIndex].push(pI.sx, pI.sy, pJ.sx, pJ.sy);
         }
       }
+    }
+
+    ctx.lineWidth = 0.5;
+    for (let b = 0; b < 6; b++) {
+      const lines = sphereLineBuckets[b];
+      if (lines.length === 0) continue;
+      ctx.beginPath();
+      for (let k = 0; k < lines.length; k += 4) {
+        ctx.moveTo(lines[k], lines[k+1]);
+        ctx.lineTo(lines[k+2], lines[k+3]);
+      }
+      const alpha = ((b + 1) * 0.05).toFixed(2);
+      ctx.strokeStyle = `rgba(0, 255, 136, ${alpha})`;
+      ctx.stroke();
     }
 
     // Sphere dots
@@ -250,28 +304,61 @@ const initParticles = (() => {
       if (p.y < 0) p.y = H;
       if (p.y > H) p.y = 0;
 
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(0, 255, 136, ${p.a})`;
-      ctx.fill();
+      if (p.type === 'glyph') {
+        ctx.font = `${Math.round(p.r * 5 + 6)}px 'JetBrains Mono', monospace`;
+        ctx.fillText(p.char, p.x, p.y);
+      } else if (p.type === 'plus') {
+        const size = p.r * 2 + 1;
+        ctx.strokeStyle = `rgba(0, 255, 136, ${p.a})`;
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(p.x - size, p.y);
+        ctx.lineTo(p.x + size, p.y);
+        ctx.moveTo(p.x, p.y - size);
+        ctx.lineTo(p.x, p.y + size);
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
-    // Lines between nearby floating particles
-    for (let i = 0; i < floatingParticles.length; i++) {
-      for (let j = i + 1; j < floatingParticles.length; j++) {
-        const a = floatingParticles[i], b = floatingParticles[j];
-        const dx = a.x - b.x, dy = a.y - b.y;
+    // Lines between nearby floating particles (optimized sweep-line & path-batched)
+    const sortedFloating = [...floatingParticles].sort((a, b) => a.x - b.x);
+    const floatLineBuckets = Array.from({ length: 5 }, () => []);
+
+    for (let i = 0; i < sortedFloating.length; i++) {
+      const pI = sortedFloating[i];
+      for (let j = i + 1; j < sortedFloating.length; j++) {
+        const pJ = sortedFloating[j];
+        const dx = pJ.x - pI.x;
+        if (dx >= CONFIG.floatLineMax) {
+          break; // Sweep-line early out
+        }
+        const dy = pJ.y - pI.y;
         const d2 = dx * dx + dy * dy;
         if (d2 < fMaxDist2) {
           const alpha = 0.15 * (1 - d2 / fMaxDist2);
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(0, 255, 136, ${alpha})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
+          const bucketIndex = Math.min(4, Math.floor((alpha / 0.15) * 5));
+          floatLineBuckets[bucketIndex].push(pI.x, pI.y, pJ.x, pJ.y);
         }
       }
+    }
+
+    ctx.lineWidth = 0.5;
+    for (let b = 0; b < 5; b++) {
+      const lines = floatLineBuckets[b];
+      if (lines.length === 0) continue;
+      ctx.beginPath();
+      for (let k = 0; k < lines.length; k += 4) {
+        ctx.moveTo(lines[k], lines[k+1]);
+        ctx.lineTo(lines[k+2], lines[k+3]);
+      }
+      const alpha = ((b + 1) * 0.03).toFixed(2);
+      ctx.strokeStyle = `rgba(0, 255, 136, ${alpha})`;
+      ctx.stroke();
     }
 
     /* — 3. 3D Terrain Wave Grid (Holographic Landscape) — */

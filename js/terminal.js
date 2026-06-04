@@ -12,8 +12,49 @@ document.addEventListener('DOMContentLoaded', () => {
   const terminal = document.querySelector('.terminal-block');
   if (!terminal) return;
 
+  // Web Audio Context Click Synthesizer (GPU-friendly mechanical sound generator)
+  let audioCtx = null;
+  function playClickSound(freqScale = 1.0) {
+    if (!window.terminalSoundActive) return;
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.type = Math.random() > 0.5 ? 'triangle' : 'sine';
+      
+      // Randomize pitch slightly to sound like natural keyboard keys
+      const freq = (1300 + Math.random() * 500) / freqScale;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+      gain.gain.setValueAtTime(freqScale > 1.0 ? 0.025 : 0.04, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.015);
+
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.015);
+    } catch (e) {
+      console.warn("Audio Context error", e);
+    }
+  }
+
+  // Expose playClickSound globally for hover events on the Dock
+  window.playClickSound = playClickSound;
+  window.terminalSoundActive = true;
+
   // Build the interactive DOM structure inside the terminal block
   terminal.innerHTML = `
+    <button class="terminal-sound-btn" title="Toggle sound effects" aria-label="Toggle sound effects" style="position: absolute; top: 12px; right: 12px; background: rgba(5,5,5,0.6); border: 1px solid rgba(0,255,136,0.5); border-radius: 4px; color: var(--accent-primary); cursor: pointer; padding: 4px 8px; font-family: var(--font-mono); font-size: 10px; display: flex; align-items: center; gap: 4px; z-index: 20; transition: all 0.3s ease; user-select: none;">
+      <span>🔊 Sound On</span>
+    </button>
     <div class="terminal-output">
       <div class="terminal-line">umar@portfolio:~$ welcome</div>
       <div class="terminal-line text-muted">Type <span class="text-accent">help</span> for a list of available commands.</div>
@@ -29,6 +70,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const outputContainer = terminal.querySelector('.terminal-output');
   const terminalInput = terminal.querySelector('.terminal-input');
   const matrixCanvas = terminal.querySelector('.matrix-canvas');
+  const soundBtn = terminal.querySelector('.terminal-sound-btn');
+
+  soundBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.terminalSoundActive = !window.terminalSoundActive;
+    soundBtn.querySelector('span').textContent = window.terminalSoundActive ? '🔊 Sound On' : '🔇 Sound Off';
+    soundBtn.style.borderColor = window.terminalSoundActive ? 'rgba(0,255,136,0.5)' : 'rgba(255,255,255,0.15)';
+    soundBtn.style.color = window.terminalSoundActive ? 'var(--accent-primary)' : 'var(--text-secondary)';
+    if (window.terminalSoundActive) {
+      playClickSound();
+    }
+    terminalInput.focus();
+  });
+
+  soundBtn.addEventListener('mouseenter', () => {
+    soundBtn.style.background = 'rgba(0,255,136,0.08)';
+    if (window.terminalSoundActive) {
+      soundBtn.style.boxShadow = '0 0 8px rgba(0,255,136,0.3)';
+    }
+  });
+  soundBtn.addEventListener('mouseleave', () => {
+    soundBtn.style.background = 'rgba(5,5,5,0.6)';
+    soundBtn.style.boxShadow = 'none';
+  });
 
   const commandHistory = [];
   let historyIndex = -1;
@@ -47,6 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Handle keys for execute & history cycling
   terminalInput.addEventListener('keydown', (e) => {
+    playClickSound();
+
     if (e.key === 'Enter') {
       const rawValue = terminalInput.value;
       const commandText = rawValue.trim();
