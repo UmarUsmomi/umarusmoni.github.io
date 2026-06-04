@@ -196,6 +196,9 @@
 .scroll-reveal[data-delay="4"] { transition-delay: 0.4s; }
 .scroll-reveal[data-delay="5"] { transition-delay: 0.5s; }
 .scroll-reveal[data-delay="6"] { transition-delay: 0.6s; }
+.scroll-reveal[data-delay="7"] { transition-delay: 0.7s; }
+.scroll-reveal[data-delay="8"] { transition-delay: 0.8s; }
+.scroll-reveal[data-delay="9"] { transition-delay: 0.9s; }
 
 /* Directional variants */
 .scroll-reveal.from-left {

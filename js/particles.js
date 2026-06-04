@@ -334,12 +334,8 @@ const initParticles = (() => {
     }
   }
 
-  /* ── Animation Loop ────────────────────────────────────── */
+  /* ── Animation Loop ──────────────────────────────────────────── */
   function loop() {
-    if (document.hidden) {
-      rafId = requestAnimationFrame(loop);
-      return;                       // skip rendering while tab hidden
-    }
     draw();
     rafId = requestAnimationFrame(loop);
   }
@@ -377,16 +373,25 @@ const initParticles = (() => {
 
     resize();
 
-    // Mouse parallax
+    // Mouse parallax — passive for perf
     window.addEventListener('mousemove', (e) => {
       mouseOffX = e.clientX - W / 2;
       mouseOffY = e.clientY - H / 2;
-    });
+    }, { passive: true });
 
-    window.addEventListener('resize', debouncedResize);
+    window.addEventListener('resize', debouncedResize, { passive: true });
 
-    // Scroll listener to update 3D positions
-    window.addEventListener('scroll', update3DParams);
+    // Scroll listener — passive, throttled via requestAnimationFrame
+    let scrollPending = false;
+    window.addEventListener('scroll', () => {
+      if (!scrollPending) {
+        scrollPending = true;
+        requestAnimationFrame(() => {
+          update3DParams();
+          scrollPending = false;
+        });
+      }
+    }, { passive: true });
     
     // Initial call to set parameters based on current scroll position
     update3DParams();
@@ -399,8 +404,15 @@ const initParticles = (() => {
       });
     });
 
-    // Visibility API — will naturally skip draws
-    document.addEventListener('visibilitychange', () => {});
+    // Visibility API — pause RAF entirely when tab hidden, resume when visible
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      } else if (!rafId) {
+        loop();
+      }
+    });
 
     loop();
   };

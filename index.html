@@ -22,8 +22,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+  <!-- Google Fonts: display=swap for non-blocking load -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" /></noscript>
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/index.css" />
@@ -84,6 +85,7 @@
       <a href="#about" class="nav-link">About</a>
       <a href="#projects" class="nav-link">Projects</a>
       <a href="#skills" class="nav-link">Skills</a>
+      <a href="#certificates" class="nav-link">Certificates</a>
       <a href="#contact" class="nav-link">Contact</a>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
@@ -95,6 +97,7 @@
     <a href="#about" class="mobile-link">About</a>
     <a href="#projects" class="mobile-link">Projects</a>
     <a href="#skills" class="mobile-link">Skills</a>
+    <a href="#certificates" class="mobile-link">Certificates</a>
     <a href="#contact" class="mobile-link">Contact</a>
     <button class="mobile-close-btn" id="mobile-close-btn" aria-label="Close Menu">Close Menu</button>
   </div>
@@ -409,7 +412,140 @@
   </section>
 
   <!-- ══════════════════════════════════════════════
-       SECTION 5 — CONTACT
+       SECTION 5 — CERTIFICATES
+       ══════════════════════════════════════════════ -->
+  <section id="certificates">
+    <div class="container">
+      <h2 class="section-title scroll-reveal">Certificates</h2>
+      <p class="certs-subtitle scroll-reveal text-center text-muted">
+        Professional certifications issued by DeepLearning.AI. Issued to
+        <span class="text-accent">Умар Усмони Усмонзода</span>.
+      </p>
+
+      <!-- Professional Certificate (featured) -->
+      <div class="cert-featured scroll-reveal">
+        <div class="cert-featured-inner">
+          <div class="cert-featured-info">
+            <span class="cert-type-badge cert-type-pro">⭐ Профессиональный сертификат</span>
+            <h3>Генеративный ИИ для разработки программного обеспечения</h3>
+            <p>Полный профессиональный сертификат DeepLearning.AI, включающий 3 курса по применению генеративного ИИ в разработке программного обеспечения.</p>
+            <ul class="cert-course-list">
+              <li>Введение в генеративный ИИ для разработки ПО</li>
+              <li>Командная разработка программного обеспечения с ИИ</li>
+              <li>Программное обеспечение на базе ИИ и системное проектирование</li>
+            </ul>
+            <div class="cert-meta">
+              <span class="cert-meta-item">📅 30 марта 2026</span>
+              <span class="cert-meta-item">🏛️ DeepLearning.AI</span>
+              <span class="cert-meta-item cert-courses">📚 3 курса</span>
+            </div>
+            <div class="cert-actions">
+              <a href="https://learn.deeplearning.ai/certificates/3e27d8c4-ae9e-417c-94ac-602d03a86792" target="_blank" rel="noopener noreferrer" class="btn-primary" id="cert-verify-pro">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12l2 2 4-4"/><path d="M22 12A10 10 0 1 1 12 2a10 10 0 0 1 10 10z"/></svg>
+                Проверить сертификат
+              </a>
+            </div>
+          </div>
+          <div class="cert-featured-preview">
+            <div class="cert-img-wrapper">
+              <img src="assets/certificates/cert-professional.png"
+                   alt="Professional Certificate — Generative AI for Software Development"
+                   loading="lazy"
+                   decoding="async"
+                   width="600"
+                   height="450" />
+              <div class="cert-img-overlay">
+                <span>Умар Усмони Усмонзода</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Certificates Grid -->
+      <div class="cert-grid">
+
+        <article class="cert-card glass-card scroll-reveal" data-delay="2" id="cert-card-1">
+          <div class="cert-card-header">
+            <span class="cert-type-badge cert-type-course">Сертификат курса</span>
+            <a href="https://learn.deeplearning.ai/certificates/5b0e90e1-aa45-4a9d-9354-7106708a2adc" target="_blank" rel="noopener noreferrer" class="cert-verify-link" aria-label="Verify certificate">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+          <div class="cert-card-img-wrap">
+            <img src="assets/certificates/cert-team-ai.png"
+                 alt="Course Certificate — Team Software Development with AI"
+                 loading="lazy"
+                 decoding="async"
+                 width="400"
+                 height="300" />
+            <div class="cert-img-overlay"><span>Умар Усмони Усмонзода</span></div>
+          </div>
+          <div class="cert-card-body">
+            <h4>Командная разработка ПО с ИИ</h4>
+            <p>Принципы совместной разработки программного обеспечения с использованием инструментов искусственного интеллекта.</p>
+            <div class="cert-meta">
+              <span class="cert-meta-item">📅 23 марта 2026</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="cert-card glass-card scroll-reveal" data-delay="4" id="cert-card-2">
+          <div class="cert-card-header">
+            <span class="cert-type-badge cert-type-course">Сертификат курса</span>
+            <a href="https://learn.deeplearning.ai/certificates/a8ecff7f-3a26-44f1-8648-7cd3beafe96b" target="_blank" rel="noopener noreferrer" class="cert-verify-link" aria-label="Verify certificate">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+          <div class="cert-card-img-wrap">
+            <img src="assets/certificates/cert-ai-systems.png"
+                 alt="Course Certificate — AI-Powered Software and System Design"
+                 loading="lazy"
+                 decoding="async"
+                 width="400"
+                 height="300" />
+            <div class="cert-img-overlay"><span>Умар Усмони Усмонзода</span></div>
+          </div>
+          <div class="cert-card-body">
+            <h4>ПО на базе ИИ и системное проектирование</h4>
+            <p>Проектирование программных систем с интеграцией искусственного интеллекта и машинного обучения.</p>
+            <div class="cert-meta">
+              <span class="cert-meta-item">📅 30 марта 2026</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="cert-card glass-card scroll-reveal" data-delay="6" id="cert-card-3">
+          <div class="cert-card-header">
+            <span class="cert-type-badge cert-type-course">Сертификат курса</span>
+            <a href="https://learn.deeplearning.ai/certificates/1a440eab-b001-4b22-8557-dd37a0abdbfd" target="_blank" rel="noopener noreferrer" class="cert-verify-link" aria-label="Verify certificate">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+          <div class="cert-card-img-wrap">
+            <img src="assets/certificates/cert-intro-ai.png"
+                 alt="Course Certificate — Introduction to Generative AI for Software Development"
+                 loading="lazy"
+                 decoding="async"
+                 width="400"
+                 height="300" />
+            <div class="cert-img-overlay"><span>Умар Усмони Усмонзода</span></div>
+          </div>
+          <div class="cert-card-body">
+            <h4>Введение в генеративный ИИ для разработки ПО</h4>
+            <p>Основы применения генеративного искусственного интеллекта в процессах разработки программного обеспечения.</p>
+            <div class="cert-meta">
+              <span class="cert-meta-item">📅 11 марта 2026</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 6 — CONTACT
        ══════════════════════════════════════════════ -->
   <section id="contact">
     <div class="container-sm">
@@ -478,11 +614,11 @@
   <!-- ══════════════════════════════════════════════
        SCRIPTS
        ══════════════════════════════════════════════ -->
-  <script src="js/particles.js"></script>
-  <script src="js/cursor.js"></script>
-  <script src="js/typing.js"></script>
-  <script src="js/terminal.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/particles.js" defer></script>
+  <script src="js/cursor.js" defer></script>
+  <script src="js/typing.js" defer></script>
+  <script src="js/terminal.js" defer></script>
+  <script src="js/main.js" defer></script>
 
 </body>
 </html>
