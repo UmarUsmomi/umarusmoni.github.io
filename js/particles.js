@@ -32,6 +32,7 @@ const initParticles = (() => {
   let floatingParticles = [];
   let angleY = 0, angleX = 0;
   let mouseOffX = 0, mouseOffY = 0;
+  let mouseActive = false;
   let rafId = null;
   let sphereRadius = 150;
 
@@ -188,13 +189,28 @@ const initParticles = (() => {
     const totalAngleX = mouseOffY * CONFIG.parallaxFactor;
 
     const projected = [];
+    const mx = mouseOffX + W / 2;
+    const my = mouseOffY + H / 2;
     for (let i = 0; i < spherePoints.length; i++) {
       let p = spherePoints[i];
       // Scale to sphere radius
       let pt = { x: p.x * sphereRadius, y: p.y * sphereRadius, z: p.z * sphereRadius };
       pt = rotateY(pt, totalAngleY);
       pt = rotateX(pt, totalAngleX);
-      projected.push(project(pt.x, pt.y, pt.z));
+      const proj = project(pt.x, pt.y, pt.z);
+      
+      // Interactive warp: push points away from mouse to create a bubble effect
+      if (mouseActive) {
+        const dx = proj.sx - mx;
+        const dy = proj.sy - my;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < 160 && d > 0) {
+          const force = (160 - d) / 160;
+          proj.sx += (dx / d) * force * 30;
+          proj.sy += (dy / d) * force * 30;
+        }
+      }
+      projected.push(proj);
     }
 
     // Lines between nearby sphere points
@@ -377,7 +393,13 @@ const initParticles = (() => {
     window.addEventListener('mousemove', (e) => {
       mouseOffX = e.clientX - W / 2;
       mouseOffY = e.clientY - H / 2;
+      mouseActive = true;
     }, { passive: true });
+
+    // Mark inactive on mouseleave from window
+    document.addEventListener('mouseleave', () => {
+      mouseActive = false;
+    });
 
     window.addEventListener('resize', debouncedResize, { passive: true });
 

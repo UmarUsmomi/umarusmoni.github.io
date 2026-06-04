@@ -286,12 +286,16 @@ document.addEventListener('DOMContentLoaded', () => {
           0,
           1 - Math.abs(e.clientX - (r.x + r.width / 2)) / 120
         );
-        el.style.scale = 1 + t * 0.4;
+        // Disable transitions temporarily during mouse move for instant, lag-free scaling
+        el.style.transition = 'none';
+        el.style.scale = 1 + t * 0.5;
       });
     });
 
     dock.addEventListener('pointerleave', () => {
       dock.querySelectorAll('.dock > *').forEach((el) => {
+        // Restore transition so it scales back down smoothly
+        el.style.transition = '';
         el.style.scale = '';
       });
     });

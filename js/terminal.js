@@ -91,6 +91,7 @@ Available commands:
   <span class="text-accent">ping</span>      - Test connection latency
   <span class="text-accent">social</span>    - Print active social profiles
   <span class="text-accent">neofetch</span>  - Display system specs & custom ASCII art
+  <span class="text-accent">scan</span>      - Perform cybersecurity audit of the site
   <span class="text-accent">video</span>     - Embed and watch the Reels video (alias: <span class="text-accent">reels</span>)
   <span class="text-accent">matrix</span>    - Initiate system override (digital rain)
   <span class="text-accent">clear</span>     - Clear the terminal screen
@@ -173,6 +174,11 @@ rtt min/avg/max/mdev = 27.1/28.2/29.3/0.91 ms
 
     if (cmd === 'video' || cmd === 'reels') {
       embedVideo();
+      return;
+    }
+
+    if (cmd === 'scan') {
+      runSecurityScan();
       return;
     }
 
@@ -284,5 +290,47 @@ rtt min/avg/max/mdev = 27.1/28.2/29.3/0.91 ms
       terminal.scrollTop = terminal.scrollHeight;
       terminalInput.focus();
     }, 4500);
+  }
+
+  function runSecurityScan() {
+    terminalInput.disabled = true;
+    terminalInput.style.opacity = '0.3';
+
+    const scanSteps = [
+      { text: '<span style="color: var(--accent-primary);">[+]</span> Initializing local cybersecurity diagnostics...', delay: 150 },
+      { text: '<span style="color: var(--accent-primary);">[+]</span> Target host resolved: <span class="text-accent">umarusmoni.github.io</span>', delay: 450 },
+      { text: '<span style="color: var(--accent-primary);">[+]</span> Launching vulnerability scanners...', delay: 350 },
+      { text: '<span class="text-muted">[.]</span> Port scanning: [22/tcp, 80/tcp, 443/tcp open, filtered: 341]', delay: 600 },
+      { text: '<span class="text-muted">[.]</span> Auditing transport encryption protocols...', delay: 450 },
+      { text: '<span style="color: var(--accent-teal);">[+]</span> TLS v1.3 detected. Strong SSL ciphers verified: AES_256_GCM.', delay: 350 },
+      { text: '<span class="text-muted">[.]</span> Inspecting Obsidian-Telegram Sync Daemon...', delay: 600 },
+      { text: '<span style="color: var(--accent-primary);">[+]</span> Daemon state: <span style="color: var(--accent-primary); font-weight: bold;">ONLINE</span> | Integrity: <span style="color: var(--accent-primary);">SECURE (SHA-256 matched)</span>', delay: 450 },
+      { text: '<span class="text-muted">[.]</span> Auditing local firewall configuration...', delay: 450 },
+      { text: '<span style="color: var(--accent-primary);">[+]</span> UFW Status: ACTIVE | Anti-gravity shields: 100% stable', delay: 350 },
+      { text: '<span style="color: var(--accent-primary); font-weight: bold;">[!] SCAN COMPLETE: 0 vulnerabilities found. System fully secure.</span>', delay: 600 },
+    ];
+
+    let stepIndex = 0;
+    
+    function printStep() {
+      if (stepIndex < scanSteps.length) {
+        const step = scanSteps[stepIndex];
+        const line = document.createElement('div');
+        line.className = 'terminal-line';
+        line.innerHTML = step.text;
+        outputContainer.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+        stepIndex++;
+        setTimeout(printStep, step.delay);
+      } else {
+        outputContainer.appendChild(document.createElement('br'));
+        terminal.scrollTop = terminal.scrollHeight;
+        terminalInput.disabled = false;
+        terminalInput.style.opacity = '1';
+        terminalInput.focus();
+      }
+    }
+
+    setTimeout(printStep, 200);
   }
 });
