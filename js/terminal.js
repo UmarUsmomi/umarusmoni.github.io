@@ -198,10 +198,10 @@ rtt min/avg/max/mdev = 27.1/28.2/29.3/0.91 ms
     `,
     social: () => `
 <span class="text-accent">Active Channels:</span>
-  - Telegram:  <a href="https://t.me/cloudety" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">t.me/cloudety</a>
-  - GitHub:    <a href="https://github.com/UmarUsmomi" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">github.com/UmarUsmomi</a>
-  - LinkedIn:  <a href="https://www.linkedin.com/in/umar-usmoni-b3730b402" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">linkedin/in/umar-usmoni-b3730b402</a>
-  - TikTok:    <a href="https://www.tiktok.com/@gravity751" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">tiktok.com/@gravity751</a>
+  - Telegram:  <a href="https://t.me/cloudety" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary); text-decoration: underline;">t.me/cloudety</a>
+  - GitHub:    <a href="https://github.com/UmarUsmomi" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary); text-decoration: underline;">github.com/UmarUsmomi</a>
+  - LinkedIn:  <a href="https://www.linkedin.com/in/umar-usmoni-b3730b402" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary); text-decoration: underline;">linkedin/in/umar-usmoni-b3730b402</a>
+  - TikTok:    <a href="https://www.tiktok.com/@gravity751" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary); text-decoration: underline;">tiktok.com/@gravity751</a>
     `,
     neofetch: () => `
 <pre class="neofetch-art" style="font-family: 'JetBrains Mono', monospace; line-height: 1.2; margin: 0; display: inline-block; vertical-align: top; color: var(--accent-primary);">

@@ -220,8 +220,23 @@ const initParticles = (() => {
     ctx.stroke();
 
     /* — 1. Sphere — */
-    angleY += CONFIG.rotSpeedY * warpSpeedFactor;
-    const totalAngleY = angleY + mouseOffX * CONFIG.parallaxFactor;
+    if (typeof window.scrollVelocity === 'number') {
+      window.scrollVelocity *= 0.92; // smooth decay
+    } else {
+      window.scrollVelocity = 0;
+    }
+
+    // Dynamic speed increase based on scrolling speed
+    const scrollSpin = Math.abs(window.scrollVelocity) * 0.0005;
+    angleY += (CONFIG.rotSpeedY + Math.min(0.015, scrollSpin)) * warpSpeedFactor;
+
+    // Direct scroll-linked rotation
+    const scrollY = window.scrollY;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPct = maxScroll > 0 ? scrollY / maxScroll : 0;
+    const scrollAngleY = scrollPct * Math.PI * 4; // 2 full turns over scroll
+
+    const totalAngleY = angleY + scrollAngleY + mouseOffX * CONFIG.parallaxFactor;
     const totalAngleX = mouseOffY * CONFIG.parallaxFactor;
 
     const projected = [];
@@ -492,7 +507,13 @@ const initParticles = (() => {
 
     // Scroll listener — passive, throttled via requestAnimationFrame
     let scrollPending = false;
+    let lastScrollY = window.scrollY;
+    window.scrollVelocity = 0;
     window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+      window.scrollVelocity = currentScrollY - lastScrollY;
+      lastScrollY = currentScrollY;
+
       if (!scrollPending) {
         scrollPending = true;
         requestAnimationFrame(() => {
